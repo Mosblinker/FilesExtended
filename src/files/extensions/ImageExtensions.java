@@ -38,7 +38,7 @@ public class ImageExtensions {
      * This is a FileFilter for JPEG files.
      */
     public static final FileFilter JPEG_FILTER = generateExtensionFilter(
-            JPEG.toUpperCase(),JPG,JPEG,JPE,JFIF);
+            JPEG.toUpperCase(),JPEG,JPG,JPE,JFIF);
     /**
      * This has the extension for a GIF file.
      */
