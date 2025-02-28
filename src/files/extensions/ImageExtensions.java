@@ -104,7 +104,7 @@ public class ImageExtensions {
      *  <li>{@link WEBP}</li>
      * </ol>
      */
-    public static final String[] IMAGE_EXT = {PNG,JPG,JPEG,JPE,JFIF,GIF,TIF,
+    public static final String[] IMAGE_EXT = {PNG,JPEG,JPG,JPE,JFIF,GIF,TIF,
         TIFF,HEIC,WEBP};
     /**
      * This is a FileFilter for image files.
