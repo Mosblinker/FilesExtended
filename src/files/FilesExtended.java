@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package files;
+
 import java.awt.Component;
 import java.awt.Toolkit;
 import java.io.*;
@@ -793,6 +794,84 @@ public class FilesExtended {
             // Ensure that the relative file is not null
         Objects.requireNonNull(relFile);
         return resolve(relFile,file,relFile.isDirectory());
+    }
+    /**
+     * 
+     * @param relFile The file to make the file relative to.
+     * @param file The file to make relative.
+     * @param isDirectory Whether to treat the {@code relFile} file as a 
+     * directory.
+     * @param divergence
+     * @param options
+     * @return 
+     * @throws InvalidPathException
+     * @throws SecurityException
+     * @throws IOError
+     * @throws IllegalArgumentException If the divergence is negative
+     */
+    public static File relativize(File relFile, File file, 
+            boolean isDirectory, int divergence, LinkOption... options){
+            // Ensure that the file is not null
+        Objects.requireNonNull(file);
+            // Ensure that the relative file is not null
+        Objects.requireNonNull(relFile);
+        return PathsExtended.relativize(relFile.toPath(), file.toPath(), 
+                isDirectory, divergence, options).toFile();
+    }
+    /**
+     * 
+     * @param relFile The file to make the file relative to.
+     * @param file The file to make relative.
+     * @param divergence
+     * @param options
+     * @return 
+     * @throws InvalidPathException
+     * @throws SecurityException
+     * @throws IOError
+     * @throws IllegalArgumentException If the divergence is negative
+     */
+    public static File relativize(File relFile, File file, int divergence, 
+            LinkOption... options){
+            // Ensure that the file is not null
+        Objects.requireNonNull(file);
+            // Ensure that the relative file is not null
+        Objects.requireNonNull(relFile);
+        return relativize(relFile,file,relFile.isDirectory(),divergence,
+                options);
+    }
+    /**
+     * 
+     * @param relFile The file to make the file relative to.
+     * @param file The file to make relative.
+     * @param isDirectory Whether to treat the {@code relFile} file as a 
+     * directory.
+     * @param options
+     * @return 
+     * @throws InvalidPathException
+     * @throws SecurityException
+     * @throws IOError
+     * @see PathsExtended#DEFAULT_RELATIVIZE_DIVERGENCE
+     */
+    public static File relativize(File relFile, File file, 
+            boolean isDirectory, LinkOption... options){
+        return relativize(relFile,file,isDirectory,
+                PathsExtended.DEFAULT_RELATIVIZE_DIVERGENCE,options);
+    }
+    /**
+     * 
+     * @param relFile The file to make the file relative to.
+     * @param file The file to make relative.
+     * @param options
+     * @return 
+     * @throws InvalidPathException
+     * @throws SecurityException
+     * @throws IOError
+     * @see PathsExtended#DEFAULT_RELATIVIZE_DIVERGENCE
+     */
+    public static File relativize(File relFile, File file, 
+            LinkOption... options){
+        return relativize(relFile,file,
+                PathsExtended.DEFAULT_RELATIVIZE_DIVERGENCE,options);
     }
     /**
      * This class cannot be constructed.
