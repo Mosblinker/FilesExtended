@@ -366,7 +366,7 @@ public class PathsExtended {
      * @return 
      * @throws SecurityException
      * @throws IOError
-     * @see #DEFAULT_RELATIVE_FILE_DIVERGENCE
+     * @see #DEFAULT_RELATIVIZE_DIVERGENCE
      */
     public static Path relativize(Path relPath, Path path, boolean isDirectory, 
             LinkOption... options){
@@ -381,7 +381,7 @@ public class PathsExtended {
      * @return 
      * @throws SecurityException
      * @throws IOError
-     * @see #DEFAULT_RELATIVE_FILE_DIVERGENCE
+     * @see #DEFAULT_RELATIVIZE_DIVERGENCE
      */
     public static Path relativize(Path relPath,Path path,LinkOption... options){
         return relativize(relPath,path,DEFAULT_RELATIVIZE_DIVERGENCE,options);
