@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 /**
  * This includes various functions for altering files and file paths.
  * @author Milo Steier
@@ -756,6 +757,42 @@ public class FilesExtended {
                     !(dirParent.exists()&&dirParent.isDirectory()));
         }
         return true;
+    }
+    /**
+     * 
+     * @param relFile
+     * @param file The file to resolve (cannot be null).
+     * @param isDirectory Whether to treat the {@code relFile} file as a 
+     * directory. If this is false, then the {@code relFile} file will be 
+     * treated as a sibling of the {@code file}.
+     * @return 
+     * @throws InvalidPathException
+     * @throws SecurityException
+     * @throws IOError
+     */
+    public static File resolve(File relFile, File file, boolean isDirectory){
+            // Ensure that the file is not null
+        Objects.requireNonNull(file);
+            // Ensure that the relative file is not null
+        Objects.requireNonNull(relFile);
+        return PathsExtended.resolve(relFile.toPath(), file.toPath(),
+                isDirectory).toFile();
+    }
+    /**
+     * 
+     * @param relFile
+     * @param file The file to resolve (cannot be null).
+     * @return 
+     * @throws InvalidPathException
+     * @throws SecurityException
+     * @throws IOError
+     */
+    public static File resolve(File relFile, File file){
+            // Ensure that the file is not null
+        Objects.requireNonNull(file);
+            // Ensure that the relative file is not null
+        Objects.requireNonNull(relFile);
+        return resolveFile(file,relFile,relFile.isDirectory());
     }
     /**
      * This class cannot be constructed.

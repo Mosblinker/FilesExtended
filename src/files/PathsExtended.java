@@ -185,6 +185,55 @@ public class PathsExtended {
         return start.toRealPath(options).resolve(path.subpath(toIndex, length));
     }
     /**
+     * 
+     * @param relPath
+     * @param path The path to resolve (cannot be null).
+     * @param isDirectory Whether to treat the {@code relPath} path as a 
+     * directory. If this is false, then the {@code relPath} path will be 
+     * treated as a sibling of the {@code path}.
+     * @return 
+     * @throws SecurityException
+     * @throws IOError
+     */
+    public static Path resolve(Path relPath, Path path, boolean isDirectory){
+            // If the given path is null
+        Objects.requireNonNull(path);
+            // If the given relative path is null
+        Objects.requireNonNull(relPath);
+            // If the path is already absolute
+        if (path.isAbsolute())
+                // Normalize the path
+            return path.normalize();
+            // Make the relative path absolute and normalized
+        relPath = relPath.toAbsolutePath().normalize();
+            // If the relative path has no names and no root (the relative path 
+            // is empty)
+        if (relPath.getNameCount() == 0 && relPath.getRoot() == null)
+            return path.normalize();
+            // If the relative file is a directory
+        if (isDirectory)
+                // Resolve the file's path
+            path = relPath.resolve(path);
+        else    // Resolve the file's path as a sibling of the relative file
+            path = relPath.resolveSibling(path);
+        return path.normalize();
+    }
+    /**
+     * 
+     * @param relPath
+     * @param path The path to resolve (cannot be null).
+     * @return 
+     * @throws SecurityException
+     * @throws IOError
+     */
+    public static Path resolve(Path relPath, Path path){
+            // If the given path is null
+        Objects.requireNonNull(path);
+            // If the given relative path is null
+        Objects.requireNonNull(relPath);
+        return resolve(relPath,path,Files.isDirectory(relPath));
+    }
+    /**
      * This class cannot be constructed.
      */
     private PathsExtended(){}
