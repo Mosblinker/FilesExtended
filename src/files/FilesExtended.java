@@ -792,7 +792,7 @@ public class FilesExtended {
         Objects.requireNonNull(file);
             // Ensure that the relative file is not null
         Objects.requireNonNull(relFile);
-        return resolveFile(file,relFile,relFile.isDirectory());
+        return resolve(relFile,file,relFile.isDirectory());
     }
     /**
      * This class cannot be constructed.
