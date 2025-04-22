@@ -134,6 +134,57 @@ public class PathsExtended {
         return mismatch(path1,path2,0);
     }
     /**
+     * This returns a version of the given path that is <em>real</em> up to the 
+     * given index, exclusive. For more information on what it means to make a 
+     * path <em>real</em>, please refer to the {@link Path#toRealPath 
+     * Path.toRealPath} method. <p>
+     * 
+     * This method is equivalent to getting the subpath of the given path, 
+     * starting at the start of the path and ending at the given index, 
+     * exclusive, and making that subpath <em>real</em> before appending the 
+     * rest of the given path to that subpath.
+     * 
+     * @param path The path to make partially <em>real</em>.
+     * @param toIndex The index up to which to make the path <em>real</em>, 
+     * exclusive.
+     * @param options The options indicating how symbolic links are to be 
+     * handled.
+     * @return A version of the given path where the path up to the given index, 
+     * exclusive, is an absolute path representing the <em>real</em> path of the 
+     * file located by the given path.
+     * @throws IOException If the file does not exist or an I/O error occurs.
+     * @throws SecurityException If a security exception occurs while creating 
+     * the <em>real</em> path.
+     * @see Path#toRealPath(LinkOption...) 
+     * @see Path#subpath(int, int) 
+     * @see Path#getNameCount() 
+     * @see Path#getRoot() 
+     */
+    public static Path toRealPath(Path path, int toIndex, LinkOption... options) 
+            throws IOException{
+            // If none of the path is to be resolved.
+        if (toIndex == 0)
+            return path;
+            // Get the length of the path as the name count
+        int length = Objects.requireNonNull(path).getNameCount();
+            // If the entire path is to be resolved
+        if (toIndex == length)
+                // Return the real path of the given path, following symbolic 
+            return path.toRealPath(options);    // links if there are any
+            // Check the given index
+        Objects.checkIndex(toIndex, length);
+            // Get a subpath starting from the beginning and ending at the given 
+            // index
+        Path start = path.subpath(0, toIndex);
+            // If the path has a root
+        if (path.getRoot() != null)
+                // Make sure the subpath has the root of the path
+            start = path.getRoot().resolve(start);
+            // Get the real path of the subpath, following symbolic links if 
+            // there are any, and append the rest of the path to the result.
+        return start.toRealPath(options).resolve(path.subpath(toIndex, length));
+    }
+    /**
      * This class cannot be constructed.
      */
     private PathsExtended(){}
