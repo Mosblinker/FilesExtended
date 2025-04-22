@@ -14,6 +14,11 @@ import java.util.*;
  */
 public class PathsExtended {
     /**
+     * This is the default amount by which to go up in the directory tree to 
+     * check to see if a path should be made relative to another path.
+     */
+    public static final int DEFAULT_RELATIVIZE_DIVERGENCE = 3;
+    /**
      * This finds and returns the index of the first mismatch in the names 
      * between two {@code Path}s, starting at the specified index and ignoring 
      * the {@link Path#getRoot() roots} of the paths. If no mismatch is found, 
@@ -232,6 +237,158 @@ public class PathsExtended {
             // If the given relative path is null
         Objects.requireNonNull(relPath);
         return resolve(relPath,path,Files.isDirectory(relPath));
+    }
+    /**
+     * 
+     * @param relPath The path to make the {@code path} relative to.
+     * @param path The path to make relative.
+     * @param isDirectory Whether to treat the {@code relPath} file as a 
+     * directory.
+     * @param divergence
+     * @param options
+     * @return 
+     * @throws InvalidPathException
+     * @throws SecurityException
+     * @throws IOError
+     * @throws IllegalArgumentException If the divergence is negative
+     */
+    public static Path relativize(Path relPath, Path path, boolean isDirectory, 
+            int divergence, LinkOption... options){
+            // If the given path is null
+        Objects.requireNonNull(path);
+            // If the given relative path is null
+        Objects.requireNonNull(relPath);
+            // If the file divergence is negative
+        if (divergence < 0)
+            throw new IllegalArgumentException();
+            // If the given path is not absolute
+        if (!path.isAbsolute())
+            return path;
+            // Make the relative path absolute and normalized
+        relPath = relPath.toAbsolutePath().normalize();
+            // If the relative path is not a directory
+        if (!isDirectory)
+                // Get the path of the parent of the path
+            relPath = relPath.getParent();
+            // If the relative path is null or the relative path's root is null
+        if (relPath == null || relPath.getRoot() == null)
+            return path;
+            // Get the normalized version of the path
+        path = path.normalize();
+            // If the two paths do not share a root
+        if (!relPath.getRoot().equals(path.getRoot()))
+            return path;
+            // This is the path to check for to see if the should be made 
+        Path dirPath = relPath;     // relative
+            // Go up the directory tree up until we've reached the desired 
+            // location or we've reached the root.
+        for (int i = 0; i < divergence && dirPath.getNameCount() > 0;i++){
+                // Get the parent of the path
+            Path temp = dirPath.getParent();
+                // If the parent of the path to check is not null
+            if (temp != null)
+                dirPath = temp;
+            else    // End early, we cannot go any higher
+                break;
+        }   // If the path starts with the relative path
+        if (path.startsWith(dirPath)) 
+                // Make the path relative to the relative path
+            return relPath.relativize(path);
+            // If the two paths should not diverge
+        else if (divergence == 0)
+            return path;
+            // Get the index at which the two paths differ
+        int index = mismatch(path,relPath);
+            // If the two paths differ, the index is within the range of the two 
+            // paths, and the difference on the relative path is greater than 
+            // the amount by which to make the relative
+        while(index >= 0 && index < path.getNameCount() && 
+                index < relPath.getNameCount() && 
+                relPath.getNameCount() - index > divergence){
+                // Two path variables to store temporary forms of the path and 
+                // relative paths when the symlinks are read
+            Path tempPath, tempRel;
+            try{    // Try to read the symlink at the given index in the path
+                tempPath = toRealPath(path,index+1,options);
+            } catch (IOException | SecurityException ex){
+                tempPath = path;
+            }
+            try{    // Try to read the symlink at the given index in the 
+                    // relative path
+                tempRel = toRealPath(relPath,index+1,options);
+            } catch (IOException | SecurityException ex){
+                tempRel = relPath;
+            }    // Get the mismatch between these two new paths
+            int index2 = mismatch(tempPath,tempRel,index);
+                // If reading the symlinks managed to increase the amount by 
+            if (index < index2){    // which the two paths match
+                    // Store the new paths and the index of mismatch
+                path = tempPath;
+                relPath = tempRel;
+                index = index2;
+            } else 
+                // We've either reached a point where the the two paths 
+                // completely diverge or we've reached a symlink with a path 
+                // that is not found in both paths
+                break;
+        }   // If enough of the relative path matches the path that they can be 
+            // made relative.
+        if (relPath.getNameCount() - index <= divergence)
+            return relPath.relativize(path);
+        return path;
+    }
+    /**
+     * 
+     * @param relPath The path to make the {@code path} relative to.
+     * @param path The path to make relative.
+     * @param divergence
+     * @param options
+     * @return 
+     * @throws InvalidPathException
+     * @throws SecurityException
+     * @throws IOError
+     * @throws IllegalArgumentException If the divergence is negative
+     */
+    public static Path relativize(Path relPath, Path path, int divergence, 
+            LinkOption... options){
+            // If the given path is null
+        Objects.requireNonNull(path);
+            // If the given relative path is null
+        Objects.requireNonNull(relPath);
+        return relativize(relPath,path,Files.isDirectory(relPath),divergence,
+                options);
+    }
+    /**
+     * 
+     * @param relPath The path to make the {@code path} relative to.
+     * @param path The path to make relative.
+     * @param isDirectory Whether to treat the {@code relPath} file as a 
+     * directory.
+     * @param options
+     * @return 
+     * @throws InvalidPathException
+     * @throws SecurityException
+     * @throws IOError
+     * @see #DEFAULT_RELATIVE_FILE_DIVERGENCE
+     */
+    public static Path relativize(Path relPath, Path path, boolean isDirectory, 
+            LinkOption... options){
+        return relativize(relPath,path,isDirectory,
+                DEFAULT_RELATIVIZE_DIVERGENCE,options);
+    }
+    /**
+     * 
+     * @param relPath The path to make the {@code path} relative to.
+     * @param path The path to make relative.
+     * @param options
+     * @return 
+     * @throws InvalidPathException
+     * @throws SecurityException
+     * @throws IOError
+     * @see #DEFAULT_RELATIVE_FILE_DIVERGENCE
+     */
+    public static Path relativize(Path relPath,Path path,LinkOption... options){
+        return relativize(relPath,path,DEFAULT_RELATIVIZE_DIVERGENCE,options);
     }
     /**
      * This class cannot be constructed.
