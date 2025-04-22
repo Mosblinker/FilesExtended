@@ -247,7 +247,6 @@ public class PathsExtended {
      * @param divergence
      * @param options
      * @return 
-     * @throws InvalidPathException
      * @throws SecurityException
      * @throws IOError
      * @throws IllegalArgumentException If the divergence is negative
@@ -344,7 +343,6 @@ public class PathsExtended {
      * @param divergence
      * @param options
      * @return 
-     * @throws InvalidPathException
      * @throws SecurityException
      * @throws IOError
      * @throws IllegalArgumentException If the divergence is negative
@@ -366,7 +364,6 @@ public class PathsExtended {
      * directory.
      * @param options
      * @return 
-     * @throws InvalidPathException
      * @throws SecurityException
      * @throws IOError
      * @see #DEFAULT_RELATIVE_FILE_DIVERGENCE
@@ -382,7 +379,6 @@ public class PathsExtended {
      * @param path The path to make relative.
      * @param options
      * @return 
-     * @throws InvalidPathException
      * @throws SecurityException
      * @throws IOError
      * @see #DEFAULT_RELATIVE_FILE_DIVERGENCE
