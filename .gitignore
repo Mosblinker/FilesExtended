@@ -26,4 +26,4 @@ replay_pid*
 /build/
 
 # The open files and bookmarks config file for the project
-/nbproject/private/private.xml
+/nbproject/private/*
